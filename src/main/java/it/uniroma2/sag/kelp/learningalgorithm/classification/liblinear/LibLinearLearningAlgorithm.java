@@ -65,6 +65,21 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	 * The regularization parameter for positive examples
 	 */
 	private double cp = 1;
+
+//	/**
+//	 * @return the classifier
+//	 */
+//	public BinaryLinearClassifier getClassifier() {
+//		return classifier;
+//	}
+//
+//	/**
+//	 * @param classifier the classifier to set
+//	 */
+//	public void setClassifier(BinaryLinearClassifier classifier) {
+//		this.classifier = classifier;
+//	}
+
 	/**
 	 * The regularization parameter for negative examples
 	 */
@@ -84,7 +99,7 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	 * The identifier of the representation to be considered for the training
 	 * step
 	 */
-	private String representationName;
+	private String representation;
 
 	/**
 	 * @param label
@@ -102,10 +117,10 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 			String representationName) {
 		this();
 
-		this.label = label;
+		this.setLabel(label);
 		this.cn = cn;
 		this.cp = cp;
-		this.representationName = representationName;
+		this.setRepresentation(representationName);
 	}
 
 	/**
@@ -123,12 +138,8 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	 */
 	public LibLinearLearningAlgorithm(Label label, double cp, double cn,
 			boolean fairness, String representationName) {
-		this();
+		this(label, cn, cp, representationName);
 
-		this.label = label;
-		this.cn = cn;
-		this.cp = cp;
-		this.representationName = representationName;
 		this.fairness = fairness;
 	}
 
@@ -146,7 +157,7 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 		this();
 		this.cn = cn;
 		this.cp = cp;
-		this.representationName = representationName;
+		this.setRepresentation(representationName);
 	}
 
 	public LibLinearLearningAlgorithm() {
@@ -154,6 +165,34 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 		this.classifier.setModel(new BinaryLinearModel());
 	}
 
+	/**
+	 * @return the cp
+	 */
+	public double getCp() {
+		return cp;
+	}
+
+	/**
+	 * @param cp the cp to set
+	 */
+	public void setCp(double cp) {
+		this.cp = cp;
+	}
+	
+	/**
+	 * @return the cn
+	 */
+	public double getCn() {
+		return cn;
+	}
+
+	/**
+	 * @param cn the cn to set
+	 */
+	public void setCn(double cn) {
+		this.cn = cn;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -162,7 +201,7 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	 */
 	@Override
 	public String getRepresentation() {
-		return representationName;
+		return representation;
 	}
 
 	/*
@@ -174,92 +213,24 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	 */
 	@Override
 	public void setRepresentation(String representation) {
-		this.representationName = representation;
+		this.representation = representation;
 		BinaryLinearModel model = this.classifier.getModel();
 		model.setRepresentation(representation);
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * it.uniroma2.sag.kelp.learningalgorithm.LearningAlgorithm#learn(it.uniroma2
-	 * .sag.kelp.data.dataset.Dataset)
+	
+	/**
+	 * @return True if the fairness policy is applied. False otherwise.
 	 */
-	@Override
-	public void learn(Dataset dataset) {
-		if (isFairness() && cp == cn) {
-			float positiveExample = dataset.getNumberOfPositiveExamples(label);
-			float negativeExample = dataset.getNumberOfNegativeExamples(label);
-
-			cp = cn * negativeExample / positiveExample;
-		}
-
-		double eps = 0.1;
-
-		int pos = dataset.getNumberOfPositiveExamples(label);
-		int neg = dataset.getNumberOfNegativeExamples(label);
-		int l = dataset.getNumberOfExamples();
-
-		double primal_solver_tol = eps * Math.max(Math.min(pos, neg), 1) / l;
-
-		double[] C = new double[l];
-		int i = 0;
-		for (Example e : dataset.getExamples()) {
-			if (e.isExampleOf(label))
-				C[i] = cp;
-			else
-				C[i] = cn;
-
-			i++;
-		}
-
-		Problem problem = new Problem(dataset, representationName, label);
-
-		L2R_L2_SvcFunction fun_obj = new L2R_L2_SvcFunction(problem, C);
-
-		Tron tron = new Tron(fun_obj, primal_solver_tol);
-
-		double[] w = new double[problem.n];
-		tron.tron(w);
-
-		SparseVector wSparseVector = problem.getW(w);
-
-		this.classifier.getModel().setHyperplane(wSparseVector);
-		this.classifier.getModel().setRepresentation(representationName);
-		this.classifier.getModel().setBias(0);
+	public boolean isFairness() {
+		return fairness;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see it.uniroma2.sag.kelp.learningalgorithm.LearningAlgorithm#duplicate()
+	/**
+	 * @param fairness
+	 *            Set the boolean parameter to force the fairness policy
 	 */
-	@Override
-	public LibLinearLearningAlgorithm duplicate() {
-		return new LibLinearLearningAlgorithm(label, cp, cn, fairness,
-				representationName);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see it.uniroma2.sag.kelp.learningalgorithm.LearningAlgorithm#reset()
-	 */
-	@Override
-	public void reset() {
-		this.classifier.reset();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see it.uniroma2.sag.kelp.learningalgorithm.classification.
-	 * ClassificationLearningAlgorithm#getPredictionFunction()
-	 */
-	@Override
-	public BinaryLinearClassifier getPredictionFunction() {
-		return this.classifier;
+	public void setFairness(boolean fairness) {
+		this.fairness = fairness;
 	}
 
 	/*
@@ -312,19 +283,93 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	public void setLabel(Label label) {
 		this.setLabels(Arrays.asList(label));
 	}
-
-	/**
-	 * @return True if the fairness policy is applied. False otherwise.
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * it.uniroma2.sag.kelp.learningalgorithm.LearningAlgorithm#learn(it.uniroma2
+	 * .sag.kelp.data.dataset.Dataset)
 	 */
-	public boolean isFairness() {
-		return fairness;
+	@Override
+	public void learn(Dataset dataset) {
+		if (isFairness() && cp == cn) {
+			float positiveExample = dataset.getNumberOfPositiveExamples(label);
+			float negativeExample = dataset.getNumberOfNegativeExamples(label);
+
+			cp = cn * negativeExample / positiveExample;
+		}
+
+		double eps = 0.1;
+
+		int pos = dataset.getNumberOfPositiveExamples(label);
+		int neg = dataset.getNumberOfNegativeExamples(label);
+		int l = dataset.getNumberOfExamples();
+
+		double primal_solver_tol = eps * Math.max(Math.min(pos, neg), 1) / l;
+
+		double[] C = new double[l];
+		int i = 0;
+		for (Example e : dataset.getExamples()) {
+			if (e.isExampleOf(label))
+				C[i] = cp;
+			else
+				C[i] = cn;
+
+			i++;
+		}
+
+		Problem problem = new Problem(dataset, representation, label);
+
+		L2R_L2_SvcFunction fun_obj = new L2R_L2_SvcFunction(problem, C);
+
+		Tron tron = new Tron(fun_obj, primal_solver_tol);
+
+		double[] w = new double[problem.n];
+		tron.tron(w);
+
+		SparseVector wSparseVector = problem.getW(w);
+
+		this.classifier.getModel().setHyperplane(wSparseVector);
+		this.classifier.getModel().setRepresentation(representation);
+		this.classifier.getModel().setBias(0);
 	}
 
-	/**
-	 * @param fairness
-	 *            Set the boolean parameter to force the fairness policy
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see it.uniroma2.sag.kelp.learningalgorithm.LearningAlgorithm#duplicate()
 	 */
-	public void setFairness(boolean fairness) {
-		this.fairness = fairness;
+	@Override
+	public LibLinearLearningAlgorithm duplicate() {
+		LibLinearLearningAlgorithm copy = new LibLinearLearningAlgorithm();
+		copy.setRepresentation(representation);
+		copy.setCn(cn);
+		copy.setCp(cp);
+		copy.setFairness(fairness);
+		
+		return copy;
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see it.uniroma2.sag.kelp.learningalgorithm.LearningAlgorithm#reset()
+	 */
+	@Override
+	public void reset() {
+		this.classifier.reset();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see it.uniroma2.sag.kelp.learningalgorithm.classification.
+	 * ClassificationLearningAlgorithm#getPredictionFunction()
+	 */
+	@Override
+	public BinaryLinearClassifier getPredictionFunction() {
+		return this.classifier;
+	}
+
 }
