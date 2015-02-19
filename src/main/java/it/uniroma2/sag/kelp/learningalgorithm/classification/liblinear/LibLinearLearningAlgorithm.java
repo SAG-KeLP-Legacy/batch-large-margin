@@ -15,13 +15,9 @@
 
 package it.uniroma2.sag.kelp.learningalgorithm.classification.liblinear;
 
-import java.util.Arrays;
-import java.util.List;
-
 import it.uniroma2.sag.kelp.data.dataset.Dataset;
 import it.uniroma2.sag.kelp.data.example.Example;
 import it.uniroma2.sag.kelp.data.label.Label;
-import it.uniroma2.sag.kelp.data.representation.vector.SparseVector;
 import it.uniroma2.sag.kelp.learningalgorithm.BinaryLearningAlgorithm;
 import it.uniroma2.sag.kelp.learningalgorithm.LinearMethod;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.ClassificationLearningAlgorithm;
@@ -30,6 +26,9 @@ import it.uniroma2.sag.kelp.learningalgorithm.classification.liblinear.solver.Pr
 import it.uniroma2.sag.kelp.learningalgorithm.classification.liblinear.solver.Tron;
 import it.uniroma2.sag.kelp.predictionfunction.classifier.BinaryLinearClassifier;
 import it.uniroma2.sag.kelp.predictionfunction.model.BinaryLinearModel;
+
+import java.util.Arrays;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -66,19 +65,19 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	 */
 	private double cp = 1;
 
-//	/**
-//	 * @return the classifier
-//	 */
-//	public BinaryLinearClassifier getClassifier() {
-//		return classifier;
-//	}
-//
-//	/**
-//	 * @param classifier the classifier to set
-//	 */
-//	public void setClassifier(BinaryLinearClassifier classifier) {
-//		this.classifier = classifier;
-//	}
+	// /**
+	// * @return the classifier
+	// */
+	// public BinaryLinearClassifier getClassifier() {
+	// return classifier;
+	// }
+	//
+	// /**
+	// * @param classifier the classifier to set
+	// */
+	// public void setClassifier(BinaryLinearClassifier classifier) {
+	// this.classifier = classifier;
+	// }
 
 	/**
 	 * The regularization parameter for negative examples
@@ -173,12 +172,13 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	}
 
 	/**
-	 * @param cp the cp to set
+	 * @param cp
+	 *            the cp to set
 	 */
 	public void setCp(double cp) {
 		this.cp = cp;
 	}
-	
+
 	/**
 	 * @return the cn
 	 */
@@ -187,12 +187,13 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	}
 
 	/**
-	 * @param cn the cn to set
+	 * @param cn
+	 *            the cn to set
 	 */
 	public void setCn(double cn) {
 		this.cn = cn;
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -217,7 +218,7 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 		BinaryLinearModel model = this.classifier.getModel();
 		model.setRepresentation(representation);
 	}
-	
+
 	/**
 	 * @return True if the fairness policy is applied. False otherwise.
 	 */
@@ -283,7 +284,7 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	public void setLabel(Label label) {
 		this.setLabels(Arrays.asList(label));
 	}
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -328,9 +329,7 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 		double[] w = new double[problem.n];
 		tron.tron(w);
 
-		SparseVector wSparseVector = problem.getW(w);
-
-		this.classifier.getModel().setHyperplane(wSparseVector);
+		this.classifier.getModel().setHyperplane(problem.getW(w));
 		this.classifier.getModel().setRepresentation(representation);
 		this.classifier.getModel().setBias(0);
 	}
@@ -347,7 +346,7 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 		copy.setCn(cn);
 		copy.setCp(cp);
 		copy.setFairness(fairness);
-		
+
 		return copy;
 	}
 

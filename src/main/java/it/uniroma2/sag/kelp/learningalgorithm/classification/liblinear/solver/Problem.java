@@ -29,6 +29,8 @@ import it.uniroma2.sag.kelp.data.example.Example;
 import it.uniroma2.sag.kelp.data.example.SimpleExample;
 import it.uniroma2.sag.kelp.data.label.Label;
 import it.uniroma2.sag.kelp.data.representation.Representation;
+import it.uniroma2.sag.kelp.data.representation.Vector;
+import it.uniroma2.sag.kelp.data.representation.vector.DenseVector;
 import it.uniroma2.sag.kelp.data.representation.vector.SparseVector;
 
 import java.io.IOException;
@@ -73,14 +75,19 @@ public class Problem {
 		this.y = new double[l];
 		this.x = new LibLinearFeature[l][];
 
-		ArrayList<SparseVector> sparseVectorlist = new ArrayList<SparseVector>();
+		ArrayList<Vector> vectorlist = new ArrayList<Vector>();
+
+		if (dataset.getExamples().get(0).getRepresentation(reprentationName) instanceof DenseVector)
+			isInputDense = true;
+
 		int i = 0;
 		for (Example e : dataset.getExamples()) {
 			SimpleExample simpleExample = (SimpleExample) e;
 			Representation r = simpleExample
 					.getRepresentation(reprentationName);
-			SparseVector sparseVector = (SparseVector) r;
-			sparseVectorlist.add(sparseVector);
+			Vector vector = (Vector) r;
+
+			vectorlist.add(vector);
 
 			if (e.isExampleOf(label))
 				y[i] = 1;
@@ -94,7 +101,7 @@ public class Problem {
 		 * Building dictionary
 		 */
 		int featureIndex = 1;
-		for (SparseVector v : sparseVectorlist) {
+		for (Vector v : vectorlist) {
 			for (String dimLabel : v.getActiveFeatures().keySet()) {
 				if (!featureDict.containsKey(dimLabel)) {
 					featureDict.put(dimLabel, featureIndex);
@@ -111,7 +118,7 @@ public class Problem {
 		n = featureDict.size() + 1;
 		i = 0;
 		bias = 0;
-		for (SparseVector v : sparseVectorlist) {
+		for (Vector v : vectorlist) {
 			Map<String, Float> activeFeatures = v.getActiveFeatures();
 			this.x[i] = new LibLinearFeatureNode[activeFeatures.size()];
 			int j = 0;
@@ -146,15 +153,35 @@ public class Problem {
 	 */
 	public double bias;
 
-	public SparseVector getW(double[] w) {
+	private boolean isInputDense;
+
+	public Vector getW(double[] w) {
+		if (isInputDense) {
+			return getDenseW(w);
+		}
+		return getSparseW(w);
+	}
+
+	private DenseVector getDenseW(double[] w) {
+		float[] tmp = new float[w.length - 1];
+		for (int i = 0; i < w.length - 1; i++) {
+			if (this.featureInverseDict.contains((i + 1))) {
+				int index = new Integer(this.featureInverseDict.get(i + 1));
+				tmp[index] = (float) w[i];
+			}
+		}
+		return new DenseVector(tmp);
+	}
+
+	private SparseVector getSparseW(double[] w) {
 		SparseVector res = new SparseVector();
 
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < w.length-1; i++) {
+		for (int i = 0; i < w.length - 1; i++) {
 			sb.append(this.featureInverseDict.get(i + 1) + ":" + w[i] + " ");
 		}
-		sb.append("__LIB_LINEAR_BIAS_:"+w[w.length-1]);
-				
+		sb.append("__LIB_LINEAR_BIAS_:" + w[w.length - 1]);
+
 		try {
 			res.setDataFromText(sb.toString().trim());
 		} catch (IOException e) {
