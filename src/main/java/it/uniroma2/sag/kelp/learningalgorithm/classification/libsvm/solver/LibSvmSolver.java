@@ -15,14 +15,17 @@
 
 package it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.solver;
 
-import java.util.Arrays;
-import java.util.List;
-
 import it.uniroma2.sag.kelp.data.dataset.Dataset;
 import it.uniroma2.sag.kelp.data.example.Example;
 import it.uniroma2.sag.kelp.data.label.Label;
 import it.uniroma2.sag.kelp.kernel.Kernel;
 import it.uniroma2.sag.kelp.learningalgorithm.BinaryLearningAlgorithm;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -44,6 +47,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Danilo Croce
  */
 public abstract class LibSvmSolver implements BinaryLearningAlgorithm {
+	private Logger logger = LoggerFactory.getLogger(LibSvmSolver.class);
 
 	/**
 	 * Info about the Shrinking status for each example
@@ -312,8 +316,9 @@ public abstract class LibSvmSolver implements BinaryLearningAlgorithm {
 		return Arrays.asList(label);
 	}
 
-	protected void info(String string) {
-		System.out.print(string);
+	protected void info(String msg) {
+		logger.info(msg);
+//		System.out.print(string);
 	}
 
 	/**

@@ -29,6 +29,9 @@ import it.uniroma2.sag.kelp.predictionfunction.regressionfunction.UnivariateKern
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
@@ -59,6 +62,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("epsilonSvmRegression")
 public class EpsilonSvmRegression extends LibCSvmSolver implements
 		RegressionLearningAlgorithm, KernelMethod {
+	private Logger logger = LoggerFactory.getLogger(EpsilonSvmRegression.class);
 
 	/**
 	 * The epsilon in loss function
@@ -115,7 +119,7 @@ public class EpsilonSvmRegression extends LibCSvmSolver implements
 
 		int l = super.examples.length;
 
-		System.out.println(l);
+		logger.info(new Integer(l).toString());
 
 		float[] res = new float[2 * l];
 
@@ -211,12 +215,17 @@ public class EpsilonSvmRegression extends LibCSvmSolver implements
 
 			sum_alpha += Math.abs(newAlpha);
 		}
-		System.out.println("nu = " + sum_alpha / (super.cp * (float) l) + "\n");
+		logger.info("nu = " + sum_alpha / (super.cp * (float) l) + "\n");
+		// System.out.println("nu = " + sum_alpha / (super.cp * (float) l) +
+		// "\n");
+		logger.info("obj = " + solution.getObj() + "\n");
 		System.out.println("obj = " + solution.getObj() + "\n");
 
 		regressor.getModel().setKernel(kernel);
 
-		System.out.println("RHO\t" + solution.getRho());
+		logger.info("RHO\t" + solution.getRho());
+		// System.out.println("RHO\t" + solution.getRho());
+		logger.info("svCount\t" + svCount);
 		System.out.println("svCount\t" + svCount);
 
 		this.sign = null;

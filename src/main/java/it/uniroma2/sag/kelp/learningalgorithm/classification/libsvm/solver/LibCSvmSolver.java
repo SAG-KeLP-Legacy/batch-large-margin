@@ -18,6 +18,9 @@ package it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.solver;
 import it.uniroma2.sag.kelp.data.dataset.Dataset;
 import it.uniroma2.sag.kelp.kernel.Kernel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class implements the solver of the C-SVM quadratic problem described in
  * [CC Chang & CJ Lin, 2011]. It is a Java porting of the library LIBSVM,
@@ -35,8 +38,7 @@ import it.uniroma2.sag.kelp.kernel.Kernel;
  * 
  * @author Danilo Croce
  */
-public abstract class LibCSvmSolver extends LibSvmSolver {
-
+public abstract class LibCSvmSolver extends LibSvmSolver {	
 	/**
 	 * @param kernel
 	 *            The kernel function

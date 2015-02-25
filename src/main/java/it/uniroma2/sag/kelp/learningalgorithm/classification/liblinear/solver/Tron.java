@@ -15,6 +15,9 @@
 
 package it.uniroma2.sag.kelp.learningalgorithm.classification.liblinear.solver;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * Trust Region Newton Method optimization<br>
@@ -26,11 +29,10 @@ package it.uniroma2.sag.kelp.learningalgorithm.classification.liblinear.solver;
  * @author Danilo Croce
  */
 public class Tron {
+	private Logger logger = LoggerFactory.getLogger(Tron.class);
 
 	private final TronFunction fun_obj;
-
 	private final double eps;
-
 	private final int max_iter;
 
 	public Tron(final TronFunction fun_obj) {
@@ -146,12 +148,14 @@ public class Tron {
 		}
 	}
 
-	private void info(String string) {
-		System.out.println(string);
+	private void info(String msg) {
+		logger.info(msg);
+//		System.out.println(msg);
 	}
 
-	private void info(String string, Object... args) {
-		System.out.printf(string, args);
+	private void info(String msgFormatted, Object... args) {
+		logger.info(msgFormatted, args);
+//		System.out.printf(msgFormatted, args);
 	}
 
 	private int trcg(double delta, double[] g, double[] s, double[] r) {

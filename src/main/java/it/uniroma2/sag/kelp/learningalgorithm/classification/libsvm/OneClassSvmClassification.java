@@ -24,6 +24,9 @@ import it.uniroma2.sag.kelp.learningalgorithm.LearningAlgorithm;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.solver.SvmSolution;
 import it.uniroma2.sag.kelp.predictionfunction.classifier.BinaryClassifier;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 //TODO: currently this class, extending BinaryCSvmClassification, has the getter and setter methods for Cp and Cn, which are meaningless in this  learning algorithm
@@ -51,6 +54,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 @JsonTypeName("oneClassSvmClassification")
 public class OneClassSvmClassification extends BinaryCSvmClassification {
 
+	private Logger logger = LoggerFactory
+			.getLogger(OneClassSvmClassification.class);
 	/**
 	 * The \(\nu\) parameter
 	 */
@@ -155,8 +160,7 @@ public class OneClassSvmClassification extends BinaryCSvmClassification {
 		}
 
 		classifier.getModel().setKernel(kernel);
-
-		System.out.println("RHO\t" + -solution.getRho());
+		logger.info("RHO\t" + -solution.getRho());
 	}
 
 	/**
