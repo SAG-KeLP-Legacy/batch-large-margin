@@ -69,6 +69,29 @@ import java.util.Map;
  */
 public class Problem {
 
+	public TObjectIntHashMap<String> featureDict = new TObjectIntHashMap<String>();
+
+	public TIntObjectHashMap<String> featureInverseDict = new TIntObjectHashMap<String>();
+
+	/** the number of training data */
+	public int l;
+
+	/** the number of features (including the bias feature if bias &gt;= 0) */
+	public int n;
+
+	/** an array containing the target values */
+	public double[] y;
+	/** array of sparse feature nodes */
+	public LibLinearFeature[][] x;
+
+	/**
+	 * If bias &gt;= 0, we assume that one additional feature is added to the
+	 * end of each data instance
+	 */
+	public double bias;
+
+	private boolean isInputDense;
+
 	public Problem(Dataset dataset, String reprentationName, Label label) {
 
 		this.l = dataset.getNumberOfExamples();
@@ -97,78 +120,14 @@ public class Problem {
 			i++;
 		}
 
-		/*
-		 * Building dictionary
-		 */
-		int featureIndex = 1;
-		for (Vector v : vectorlist) {
-			for (String dimLabel : v.getActiveFeatures().keySet()) {
-				if (!featureDict.containsKey(dimLabel)) {
-					featureDict.put(dimLabel, featureIndex);
-					featureInverseDict.put(featureIndex, dimLabel);
-					featureIndex++;
-					// System.out.println(featureIndex + " " + dimLabel);
-				}
-			}
-		}
+		initializeExamples(vectorlist);
 
-		/*
-		 * Initialize the object
-		 */
-		n = featureDict.size() + 1;
-		i = 0;
-		bias = 0;
-		for (Vector v : vectorlist) {
-			Map<String, Float> activeFeatures = v.getActiveFeatures();
-			this.x[i] = new LibLinearFeatureNode[activeFeatures.size()];
-			int j = 0;
-			for (String dimLabel : activeFeatures.keySet()) {
-				this.x[i][j] = new LibLinearFeatureNode(
-						featureDict.get(dimLabel), activeFeatures.get(dimLabel));
-				j++;
-			}
-			i++;
-		}
-
-	}
-
-	public TObjectIntHashMap<String> featureDict = new TObjectIntHashMap<String>();
-	public TIntObjectHashMap<String> featureInverseDict = new TIntObjectHashMap<String>();
-
-	/** the number of training data */
-	public int l;
-
-	/** the number of features (including the bias feature if bias &gt;= 0) */
-	public int n;
-
-	/** an array containing the target values */
-	public double[] y;
-
-	/** array of sparse feature nodes */
-	public LibLinearFeature[][] x;
-
-	/**
-	 * If bias &gt;= 0, we assume that one additional feature is added to the
-	 * end of each data instance
-	 */
-	public double bias;
-
-	private boolean isInputDense;
-
-	public Vector getW(double[] w) {
-		if (isInputDense) {
-			return getDenseW(w);
-		}
-		return getSparseW(w);
 	}
 
 	private DenseVector getDenseW(double[] w) {
 		float[] tmp = new float[w.length - 1];
 		for (int i = 0; i < w.length - 1; i++) {
-			if (this.featureInverseDict.contains((i + 1))) {
-				int index = new Integer(this.featureInverseDict.get(i + 1));
-				tmp[index] = (float) w[i];
-			}
+			tmp[i] = (float) w[i];
 		}
 		return new DenseVector(tmp);
 	}
@@ -189,6 +148,71 @@ public class Problem {
 			return null;
 		}
 		return res;
+	}
+
+	public Vector getW(double[] w) {
+		if (isInputDense) {
+			return getDenseW(w);
+		}
+		return getSparseW(w);
+	}
+
+	public void initializeExamples(ArrayList<Vector> vectorlist) {
+		if (isInputDense) {
+			initializeExamplesDense(vectorlist);
+		} else{
+			initializeExamplesSparse(vectorlist);
+		}
+	}
+
+	private void initializeExamplesDense(ArrayList<Vector> vectorlist) {
+		for (int vectorId = 0; vectorId < vectorlist.size(); vectorId++) {
+			DenseVector denseVector = (DenseVector) (vectorlist.get(vectorId));
+			if (vectorId == 0) {
+				bias = 0;
+				n = denseVector.getNumberOfFeatures() + 1;
+			}
+			this.x[vectorId] = new LibLinearFeatureNode[denseVector
+					.getNumberOfFeatures()];
+			for (int j = 0; j < denseVector.getNumberOfFeatures(); j++)
+				this.x[vectorId][j] = new LibLinearFeatureNode(j+1,
+						denseVector.getFeatureValue(j));
+		}
+	}
+
+	private void initializeExamplesSparse(ArrayList<Vector> vectorlist) {
+		/*
+		 * Building dictionary
+		 */
+		int featureIndex = 1;
+		for (Vector v : vectorlist) {
+			for (String dimLabel : v.getActiveFeatures().keySet()) {
+				if (!featureDict.containsKey(dimLabel)) {
+					featureDict.put(dimLabel, featureIndex);
+					featureInverseDict.put(featureIndex, dimLabel);
+					featureIndex++;
+					// System.out.println(featureIndex + " " + dimLabel);
+				}
+			}
+		}
+
+		/*
+		 * Initialize the object
+		 */
+		n = featureDict.size() + 1;
+		bias = 0;
+		int i = 0;
+		for (Vector v : vectorlist) {
+			Map<String, Float> activeFeatures = v.getActiveFeatures();
+			this.x[i] = new LibLinearFeatureNode[activeFeatures.size()];
+			int j = 0;
+			for (String dimLabel : activeFeatures.keySet()) {
+				this.x[i][j] = new LibLinearFeatureNode(
+						featureDict.get(dimLabel), activeFeatures.get(dimLabel));
+				j++;
+			}
+			i++;
+		}
 	}
 
 }
