@@ -33,9 +33,9 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  * It implements the One class SVM learning algorithm discussed in [CC Chang &
- * CJ Lin, 2011]. It is a learning algorithm for binary linear classification
+ * CJ Lin, 2011]. It is a learning algorithm for estimating the Support of a High-Dimensional Distribution
  * and it relies on kernel functions. The model is acquired only by considering
- * positive examples.
+ * positive examples. It is useful in anomaly detection (a.k.a. novelty detection) 
  * <p>
  * It is a Java porting of the library LIBSVM, written in C++.
  * <p>
