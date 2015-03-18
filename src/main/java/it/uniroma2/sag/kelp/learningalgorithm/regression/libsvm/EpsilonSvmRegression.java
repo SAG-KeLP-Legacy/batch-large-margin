@@ -76,11 +76,6 @@ public class EpsilonSvmRegression extends LibCSvmSolver implements
 	private int[] index;
 
 	/**
-	 * The label to be learned
-	 */
-	private Label label;
-
-	/**
 	 * The regression function to be returned
 	 */
 	@JsonIgnore
