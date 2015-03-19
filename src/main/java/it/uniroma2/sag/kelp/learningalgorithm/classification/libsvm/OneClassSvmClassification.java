@@ -22,7 +22,6 @@ import it.uniroma2.sag.kelp.data.label.Label;
 import it.uniroma2.sag.kelp.kernel.Kernel;
 import it.uniroma2.sag.kelp.learningalgorithm.LearningAlgorithm;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.solver.SvmSolution;
-import it.uniroma2.sag.kelp.predictionfunction.classifier.BinaryClassifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,17 +93,6 @@ public class OneClassSvmClassification extends BinaryCSvmClassification {
 	 */
 	public float getNu() {
 		return nu;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.
-	 * BinaryCSvmClassification#getPredictionFunction()
-	 */
-	@Override
-	public BinaryClassifier getPredictionFunction() {
-		return this.classifier;
 	}
 
 	/*
