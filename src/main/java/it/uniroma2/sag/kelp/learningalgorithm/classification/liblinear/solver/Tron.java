@@ -119,7 +119,9 @@ public class Tron {
 				delta = Math
 						.max(delta, Math.min(alpha * snorm, sigma3 * delta));
 
-			info("iter %2d act %5.3e pre %5.3e delta %5.3e f %5.3e |g| %5.3e CG %3d%n",
+//			info("iter %2d act %5.3e pre %5.3e delta %5.3e f %5.3e |g| %5.3e CG %3d%n",
+//					iter, actred, prered, delta, f, gnorm, cg_iter);
+			info("iter {} act {} pre {} delta {} f {} |g| {} CG {}",
 					iter, actred, prered, delta, f, gnorm, cg_iter);
 
 			if (actred > eta0 * prered) {
@@ -150,12 +152,13 @@ public class Tron {
 
 	private void info(String msg) {
 		logger.info(msg);
-//		System.out.println(msg);
 	}
 
 	private void info(String msgFormatted, Object... args) {
-		logger.info(msgFormatted, args);
-//		System.out.printf(msgFormatted, args);
+//		Formatter formatter = new Formatter();
+//		Formatter format = formatter.format(msgFormatted, args);
+		logger.info(msgFormatted,args);
+//		formatter.close();
 	}
 
 	private int trcg(double delta, double[] g, double[] s, double[] r) {
