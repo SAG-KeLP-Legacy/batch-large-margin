@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Simone Filice and Giuseppe Castellucci and Danilo Croce and Roberto Basili
+ * Copyright 2015 Simone Filice and Giuseppe Castellucci and Danilo Croce and Roberto Basili
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,20 +13,21 @@
  * limitations under the License.
  */
 
-package it.uniroma2.sag.kelp.learningalgorithm.classification.liblinear;
+package it.uniroma2.sag.kelp.learningalgorithm.regression.liblinear;
 
 import it.uniroma2.sag.kelp.data.dataset.Dataset;
-import it.uniroma2.sag.kelp.data.example.Example;
 import it.uniroma2.sag.kelp.data.label.Label;
 import it.uniroma2.sag.kelp.learningalgorithm.BinaryLearningAlgorithm;
 import it.uniroma2.sag.kelp.learningalgorithm.LinearMethod;
-import it.uniroma2.sag.kelp.learningalgorithm.classification.ClassificationLearningAlgorithm;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.liblinear.solver.L2R_L2_SvcFunction;
+import it.uniroma2.sag.kelp.learningalgorithm.classification.liblinear.solver.L2R_L2_SvrFunction;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.liblinear.solver.Problem;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.liblinear.solver.Problem.LibLinearSolverType;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.liblinear.solver.Tron;
-import it.uniroma2.sag.kelp.predictionfunction.classifier.BinaryLinearClassifier;
+import it.uniroma2.sag.kelp.learningalgorithm.regression.RegressionLearningAlgorithm;
 import it.uniroma2.sag.kelp.predictionfunction.model.BinaryLinearModel;
+import it.uniroma2.sag.kelp.predictionfunction.regressionfunction.RegressionFunction;
+import it.uniroma2.sag.kelp.predictionfunction.regressionfunction.UnivariateLinearRegressionFunction;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
- * This class implements linear SVMs models trained using a coordinate descent
+ * This class implements linear SVM regressor trained using a coordinate descent
  * algorithm [Fan et al, 2008]. It operates in an explicit feature space (i.e.
  * it does not relies on any kernel). This code has been adapted from the Java
  * port of the original LIBLINEAR C++ sources.
@@ -53,33 +54,29 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * 
  * @author Danilo Croce
  */
-@JsonTypeName("liblinear")
-public class LibLinearLearningAlgorithm implements LinearMethod,
-		ClassificationLearningAlgorithm, BinaryLearningAlgorithm {
+@JsonTypeName("liblinearregressor")
+public class LibLinearRegressor implements LinearMethod,
+		RegressionLearningAlgorithm, BinaryLearningAlgorithm {
 
 	/**
-	 * The label to be learned
+	 * The property corresponding to the variable to be learned
 	 */
 	private Label label;
 	/**
-	 * The regularization parameter for positive examples
+	 * The regularization parameter
 	 */
-	private double cp = 1;
+	private double c = 1;
 
 	/**
-	 * The regularization parameter for negative examples
-	 */
-	private double cn = 1;
-	/**
-	 * A boolean parameter to force the fairness policy
-	 */
-	private boolean fairness = false;
-
-	/**
-	 * The classifier to be returned
+	 * The regressor to be returned
 	 */
 	@JsonIgnore
-	private BinaryLinearClassifier classifier;
+	private UnivariateLinearRegressionFunction regressionFunction;
+
+	/**
+	 * The epsilon in loss function of SVR (default 0.1)
+	 */
+	private double p = 0.1f;
 
 	/**
 	 * The identifier of the representation to be considered for the training
@@ -90,95 +87,71 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	/**
 	 * @param label
 	 *            The label to be learned
-	 * @param cp
-	 *            The regularization parameter for positive examples
-	 * @param cn
-	 *            The regularization parameter for negative examples
+	 * @param c
+	 *            The regularization parameter
 	 * 
 	 * @param representationName
 	 *            The identifier of the representation to be considered for the
 	 *            training step
 	 */
-	public LibLinearLearningAlgorithm(Label label, double cp, double cn,
+	public LibLinearRegressor(Label label, double c, double p,
 			String representationName) {
 		this();
 
 		this.setLabel(label);
-		this.cn = cn;
-		this.cp = cp;
+		this.c = c;
+		this.p = p;
 		this.setRepresentation(representationName);
 	}
 
 	/**
-	 * @param label
-	 *            The label to be learned
-	 * @param cp
-	 *            The regularization parameter for positive examples
-	 * @param cn
-	 *            The regularization parameter for negative examples
-	 * @param fairness
-	 *            A boolean parameter to force the fairness policy
+	 * @param c
+	 *            The regularization parameter
+	 * 
 	 * @param representationName
 	 *            The identifier of the representation to be considered for the
 	 *            training step
 	 */
-	public LibLinearLearningAlgorithm(Label label, double cp, double cn,
-			boolean fairness, String representationName) {
-		this(label, cn, cp, representationName);
-
-		this.fairness = fairness;
-	}
-
-	/**
-	 * @param cp
-	 *            The regularization parameter for positive examples
-	 * @param cn
-	 *            The regularization parameter for negative examples
-	 * @param representationName
-	 *            The identifier of the representation to be considered for the
-	 *            training step
-	 */
-	public LibLinearLearningAlgorithm(double cp, double cn,
-			String representationName) {
+	public LibLinearRegressor(double c, double p, String representationName) {
 		this();
-		this.cn = cn;
-		this.cp = cp;
+		this.c = c;
+		this.p = p;
 		this.setRepresentation(representationName);
 	}
 
-	public LibLinearLearningAlgorithm() {
-		this.classifier = new BinaryLinearClassifier();
-		this.classifier.setModel(new BinaryLinearModel());
+	public LibLinearRegressor() {
+		this.regressionFunction = new UnivariateLinearRegressionFunction();
+		this.regressionFunction.setModel(new BinaryLinearModel());
 	}
 
 	/**
-	 * @return the cp
+	 * @return the regularization parameter
 	 */
-	public double getCp() {
-		return cp;
+	public double getC() {
+		return c;
 	}
 
 	/**
-	 * @param cp
-	 *            the cp to set
+	 * @param c
+	 *            the regularization parameter
 	 */
-	public void setCp(double cp) {
-		this.cp = cp;
+	public void setC(double c) {
+		this.c = c;
 	}
 
 	/**
-	 * @return the cn
+	 * @return the epsilon in loss function
 	 */
-	public double getCn() {
-		return cn;
+	public double getP() {
+		return p;
 	}
 
 	/**
-	 * @param cn
-	 *            the cn to set
+	 * @param p
+	 *            the epsilon in loss function
 	 */
-	public void setCn(double cn) {
-		this.cn = cn;
+	public void setP(double p) {
+		this.p = p;
 	}
 
 	/*
@@ -202,23 +175,8 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	@Override
 	public void setRepresentation(String representation) {
 		this.representation = representation;
-		BinaryLinearModel model = this.classifier.getModel();
+		BinaryLinearModel model = this.regressionFunction.getModel();
 		model.setRepresentation(representation);
-	}
-
-	/**
-	 * @return True if the fairness policy is applied. False otherwise.
-	 */
-	public boolean isFairness() {
-		return fairness;
-	}
-
-	/**
-	 * @param fairness
-	 *            Set the boolean parameter to force the fairness policy
-	 */
-	public void setFairness(boolean fairness) {
-		this.fairness = fairness;
 	}
 
 	/*
@@ -235,7 +193,7 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 					"LibLinear algorithm is a binary method which can learn a single Label");
 		} else {
 			this.label = labels.get(0);
-			this.classifier.setLabels(labels);
+			this.regressionFunction.setLabels(labels);
 		}
 	}
 
@@ -281,45 +239,29 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	 */
 	@Override
 	public void learn(Dataset dataset) {
-		if (isFairness() && cp == cn) {
-			float positiveExample = dataset.getNumberOfPositiveExamples(label);
-			float negativeExample = dataset.getNumberOfNegativeExamples(label);
 
-			cp = cn * negativeExample / positiveExample;
-		}
+		double eps = 0.001;
 
-		double eps = 0.1;
-
-		int pos = dataset.getNumberOfPositiveExamples(label);
-		int neg = dataset.getNumberOfNegativeExamples(label);
 		int l = dataset.getNumberOfExamples();
 
-		double primal_solver_tol = eps * Math.max(Math.min(pos, neg), 1) / l;
-
 		double[] C = new double[l];
-		int i = 0;
-		for (Example e : dataset.getExamples()) {
-			if (e.isExampleOf(label))
-				C[i] = cp;
-			else
-				C[i] = cn;
-
-			i++;
+		for (int i = 0; i < l; i++) {
+			C[i] = c;
 		}
 
 		Problem problem = new Problem(dataset, representation, label,
-				LibLinearSolverType.CLASSIFICATION);
+				LibLinearSolverType.REGRESSION);
 
-		L2R_L2_SvcFunction fun_obj = new L2R_L2_SvcFunction(problem, C);
+		L2R_L2_SvcFunction fun_obj = new L2R_L2_SvrFunction(problem, C, p);
 
-		Tron tron = new Tron(fun_obj, primal_solver_tol);
+		Tron tron = new Tron(fun_obj, eps);
 
 		double[] w = new double[problem.n];
 		tron.tron(w);
 
-		this.classifier.getModel().setHyperplane(problem.getW(w));
-		this.classifier.getModel().setRepresentation(representation);
-		this.classifier.getModel().setBias(0);
+		this.regressionFunction.getModel().setHyperplane(problem.getW(w));
+		this.regressionFunction.getModel().setRepresentation(representation);
+		this.regressionFunction.getModel().setBias(0);
 	}
 
 	/*
@@ -328,13 +270,11 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	 * @see it.uniroma2.sag.kelp.learningalgorithm.LearningAlgorithm#duplicate()
 	 */
 	@Override
-	public LibLinearLearningAlgorithm duplicate() {
-		LibLinearLearningAlgorithm copy = new LibLinearLearningAlgorithm();
+	public LibLinearRegressor duplicate() {
+		LibLinearRegressor copy = new LibLinearRegressor();
 		copy.setRepresentation(representation);
-		copy.setCn(cn);
-		copy.setCp(cp);
-		copy.setFairness(fairness);
-
+		copy.setC(c);
+		copy.setP(p);
 		return copy;
 	}
 
@@ -345,18 +285,12 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	 */
 	@Override
 	public void reset() {
-		this.classifier.reset();
+		this.regressionFunction.reset();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see it.uniroma2.sag.kelp.learningalgorithm.classification.
-	 * ClassificationLearningAlgorithm#getPredictionFunction()
-	 */
 	@Override
-	public BinaryLinearClassifier getPredictionFunction() {
-		return this.classifier;
+	public RegressionFunction getPredictionFunction() {
+		return regressionFunction;
 	}
 
 }

@@ -69,6 +69,10 @@ import java.util.Map;
  */
 public class Problem {
 
+	public enum LibLinearSolverType {
+		CLASSIFICATION, REGRESSION
+	}
+
 	public TObjectIntHashMap<String> featureDict = new TObjectIntHashMap<String>();
 
 	public TIntObjectHashMap<String> featureInverseDict = new TIntObjectHashMap<String>();
@@ -92,7 +96,8 @@ public class Problem {
 
 	private boolean isInputDense;
 
-	public Problem(Dataset dataset, String reprentationName, Label label) {
+	public Problem(Dataset dataset, String reprentationName, Label label,
+			LibLinearSolverType solverType) {
 
 		this.l = dataset.getNumberOfExamples();
 		this.y = new double[l];
@@ -112,10 +117,14 @@ public class Problem {
 
 			vectorlist.add(vector);
 
-			if (e.isExampleOf(label))
-				y[i] = 1;
-			else
-				y[i] = -1;
+			if (solverType == LibLinearSolverType.CLASSIFICATION) {
+				if (e.isExampleOf(label))
+					y[i] = 1;
+				else
+					y[i] = -1;
+			} else {
+				y[i] = e.getRegressionValue(label);
+			}
 
 			i++;
 		}
@@ -160,7 +169,7 @@ public class Problem {
 	public void initializeExamples(ArrayList<Vector> vectorlist) {
 		if (isInputDense) {
 			initializeExamplesDense(vectorlist);
-		} else{
+		} else {
 			initializeExamplesSparse(vectorlist);
 		}
 	}
@@ -175,7 +184,7 @@ public class Problem {
 			this.x[vectorId] = new LibLinearFeatureNode[denseVector
 					.getNumberOfFeatures()];
 			for (int j = 0; j < denseVector.getNumberOfFeatures(); j++)
-				this.x[vectorId][j] = new LibLinearFeatureNode(j+1,
+				this.x[vectorId][j] = new LibLinearFeatureNode(j + 1,
 						denseVector.getFeatureValue(j));
 		}
 	}
