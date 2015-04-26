@@ -110,7 +110,7 @@ public class BinaryNuSvmClassification extends LibNuSvmSolver implements
 	 * @see it.uniroma2.sag.kelp.learningalgorithm.LearningAlgorithm#duplicate()
 	 */
 	@Override
-	public LearningAlgorithm duplicate() {
+	public BinaryNuSvmClassification duplicate() {
 		return new BinaryNuSvmClassification(kernel, label, nu);
 	}
 

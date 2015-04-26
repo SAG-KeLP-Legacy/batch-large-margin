@@ -20,7 +20,6 @@ import it.uniroma2.sag.kelp.data.dataset.SimpleDataset;
 import it.uniroma2.sag.kelp.data.example.Example;
 import it.uniroma2.sag.kelp.data.label.Label;
 import it.uniroma2.sag.kelp.kernel.Kernel;
-import it.uniroma2.sag.kelp.learningalgorithm.LearningAlgorithm;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.solver.SvmSolution;
 
 import org.slf4j.Logger;
@@ -84,7 +83,7 @@ public class OneClassSvmClassification extends BinaryCSvmClassification {
 	 * BinaryCSvmClassification#duplicate()
 	 */
 	@Override
-	public LearningAlgorithm duplicate() {
+	public OneClassSvmClassification duplicate() {
 		return new OneClassSvmClassification(kernel, label, nu);
 	}
 

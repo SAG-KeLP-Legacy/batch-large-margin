@@ -99,7 +99,7 @@ public class EpsilonSvmRegression extends LibCSvmSolver implements
 	 * @see it.uniroma2.sag.kelp.learningalgorithm.LearningAlgorithm#duplicate()
 	 */
 	@Override
-	public LearningAlgorithm duplicate() {
+	public EpsilonSvmRegression duplicate() {
 		return new EpsilonSvmRegression(getKernel(), getLabel(), getCp(),
 				getCn());
 	}
