@@ -20,7 +20,6 @@ import it.uniroma2.sag.kelp.data.example.Example;
 import it.uniroma2.sag.kelp.data.label.Label;
 import it.uniroma2.sag.kelp.kernel.Kernel;
 import it.uniroma2.sag.kelp.learningalgorithm.KernelMethod;
-import it.uniroma2.sag.kelp.learningalgorithm.LearningAlgorithm;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.solver.LibCSvmSolver;
 import it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.solver.SvmSolution;
 import it.uniroma2.sag.kelp.learningalgorithm.regression.RegressionLearningAlgorithm;
