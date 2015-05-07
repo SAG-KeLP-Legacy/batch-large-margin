@@ -36,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
- * This class implements linear SVM regressor trained using a coordinate descent
+ * This class implements linear SVM regression trained using a coordinate descent
  * algorithm [Fan et al, 2008]. It operates in an explicit feature space (i.e.
  * it does not relies on any kernel). This code has been adapted from the Java
  * port of the original LIBLINEAR C++ sources.
@@ -54,8 +54,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * 
  * @author Danilo Croce
  */
-@JsonTypeName("liblinearregressor")
-public class LibLinearRegressor implements LinearMethod,
+@JsonTypeName("liblinearregressin")
+public class LibLinearRegression implements LinearMethod,
 		RegressionLearningAlgorithm, BinaryLearningAlgorithm {
 
 	/**
@@ -94,7 +94,7 @@ public class LibLinearRegressor implements LinearMethod,
 	 *            The identifier of the representation to be considered for the
 	 *            training step
 	 */
-	public LibLinearRegressor(Label label, double c, double p,
+	public LibLinearRegression(Label label, double c, double p,
 			String representationName) {
 		this();
 
@@ -112,14 +112,14 @@ public class LibLinearRegressor implements LinearMethod,
 	 *            The identifier of the representation to be considered for the
 	 *            training step
 	 */
-	public LibLinearRegressor(double c, double p, String representationName) {
+	public LibLinearRegression(double c, double p, String representationName) {
 		this();
 		this.c = c;
 		this.p = p;
 		this.setRepresentation(representationName);
 	}
 
-	public LibLinearRegressor() {
+	public LibLinearRegression() {
 		this.regressionFunction = new UnivariateLinearRegressionFunction();
 		this.regressionFunction.setModel(new BinaryLinearModel());
 	}
@@ -270,8 +270,8 @@ public class LibLinearRegressor implements LinearMethod,
 	 * @see it.uniroma2.sag.kelp.learningalgorithm.LearningAlgorithm#duplicate()
 	 */
 	@Override
-	public LibLinearRegressor duplicate() {
-		LibLinearRegressor copy = new LibLinearRegressor();
+	public LibLinearRegression duplicate() {
+		LibLinearRegression copy = new LibLinearRegression();
 		copy.setRepresentation(representation);
 		copy.setC(c);
 		copy.setP(p);
