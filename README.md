@@ -17,6 +17,7 @@ This is the batch-large-margin module of KeLP. It contains batch learning algori
 **REGRESSION ALGORITHMS:**
 
 * _EpsilonSvmRegression_: It implements the  &epsilon;-SVR learning algorithm discussed in (Chang '11)
+* _LibLinearRegression_: It implements the linear regression learning algorithm descrived in (Fan '08)
   
 =============
 
