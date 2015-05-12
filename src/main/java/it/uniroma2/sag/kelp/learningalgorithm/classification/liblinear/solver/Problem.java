@@ -134,9 +134,9 @@ public class Problem {
 	}
 
 	private DenseVector getDenseW(double[] w) {
-		float[] tmp = new float[w.length - 1];
+		double[] tmp = new double[w.length - 1];
 		for (int i = 0; i < w.length - 1; i++) {
-			tmp[i] = (float) w[i];
+			tmp[i] = w[i];
 		}
 		return new DenseVector(tmp);
 	}
@@ -212,12 +212,12 @@ public class Problem {
 		bias = 0;
 		int i = 0;
 		for (Vector v : vectorlist) {
-			Map<String, Float> activeFeatures = v.getActiveFeatures();
+			Map<String, Number> activeFeatures = v.getActiveFeatures();
 			this.x[i] = new LibLinearFeatureNode[activeFeatures.size()];
 			int j = 0;
 			for (String dimLabel : activeFeatures.keySet()) {
 				this.x[i][j] = new LibLinearFeatureNode(
-						featureDict.get(dimLabel), activeFeatures.get(dimLabel));
+						featureDict.get(dimLabel), activeFeatures.get(dimLabel).doubleValue());
 				j++;
 			}
 			i++;
