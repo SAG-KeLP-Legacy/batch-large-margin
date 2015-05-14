@@ -318,7 +318,7 @@ public abstract class LibSvmSolver implements BinaryLearningAlgorithm {
 
 	protected void info(String msg) {
 		logger.info(msg);
-//		System.out.print(string);
+		// System.out.print(string);
 	}
 
 	/**
@@ -750,13 +750,6 @@ public abstract class LibSvmSolver implements BinaryLearningAlgorithm {
 			solution.setObj(v / 2);
 		}
 
-		// put back the solution
-		// DISABLE BY CRUX
-		// {
-		// for (int i = 0; i < l; i++)
-		// alpha_[active_set[i]] = alpha[i];
-		// }
-
 		// juggle everything back
 		/*
 		 * { for(int i=0;i<l;i++) while(active_set[i] != i)
@@ -766,11 +759,12 @@ public abstract class LibSvmSolver implements BinaryLearningAlgorithm {
 		solution.setUpper_bound_p(cp);
 		solution.setUpper_bound_n(cn);
 
-		for (int i = 0; i < l; i++)
-			alpha[i] *= y[i];
+		float[] newAlphas = new float[alpha.length];
 
-		solution.setAlphas(alpha);
-		solution.setSupporVectors(examples);
+		for (int i = 0; i < l; i++)
+			newAlphas[active_set[i]] = alpha[i];
+
+		solution.setAlphas(newAlphas);
 
 		info("\nOptimization finished after #iter = " + iter + "\n");
 

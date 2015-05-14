@@ -16,7 +16,6 @@
 package it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm;
 
 import it.uniroma2.sag.kelp.data.dataset.Dataset;
-import it.uniroma2.sag.kelp.data.example.Example;
 import it.uniroma2.sag.kelp.data.label.Label;
 import it.uniroma2.sag.kelp.kernel.Kernel;
 import it.uniroma2.sag.kelp.learningalgorithm.KernelMethod;
@@ -208,31 +207,22 @@ public class BinaryNuSvmClassification extends LibNuSvmSolver implements
 		SvmSolution solution = solve(trainingSet.getNumberOfExamples(),
 				trainingSet, zeros, y, initialAlpha);
 
-		this.classifier.getModel().setBias(-solution.getRho());
-
-		Example[] supportVectors = solution.getSupporVectors();
-		float[] alphas = solution.getAlphas();
-		for (int i = 0; i < supportVectors.length; i++) {
-
-			if (alphas[i] != 0) {
-				this.classifier.getModel().addExample(alphas[i],
-						supportVectors[i]);
-			}
-		}
-		/*
-		 * CHECK
-		 */
 		float r = calculate_r();
 
-		info("C = " + 1 / r + "\n");
+		float[] alphas = solution.getAlphas();
+		for (int i = 0; i < trainingSet.getNumberOfExamples(); i++) {
 
-		for (int i = 0; i < l; i++)
-			solution.getAlphas()[i] *= y[i] / r;
+			if (alphas[i] != 0) {
+				this.classifier.getModel().addExample(y[i] * alphas[i] / r,
+						trainingSet.getExamples().get(i));
+			}
+		}
 
-		solution.setRho(-solution.getRho() / r);
-		solution.setObj(r * r);
-		solution.setUpper_bound_n(1 / r);
-		solution.setUpper_bound_p(1 / r);
+		this.classifier.getModel().setBias(-solution.getRho() / r);
+
+		info("C = " + 1 / r);
+		info("obj = " + r * r);
+		info("rho = " + -solution.getRho() / r);
 
 		return this.classifier;
 	}

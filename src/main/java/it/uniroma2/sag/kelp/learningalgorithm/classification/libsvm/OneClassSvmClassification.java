@@ -135,19 +135,18 @@ public class OneClassSvmClassification extends BinaryCSvmClassification {
 
 		this.classifier.getModel().setBias(-solution.getRho());
 
-		Example[] supportVectors = solution.getSupporVectors();
 		float[] alphas = solution.getAlphas();
-		for (int i = 0; i < supportVectors.length; i++) {
+		for (int i = 0; i < trainingSet.getNumberOfExamples(); i++) {
 
 			if (alphas[i] != 0) {
 				// System.out.println(alphas[i]);
 				this.classifier.getModel().addExample(alphas[i],
-						supportVectors[i]);
+						trainingSet.getExamples().get(i));
 			}
 		}
 
 		classifier.getModel().setKernel(kernel);
-		logger.info("RHO\t" + -solution.getRho());
+		logger.info("RHO\t" + solution.getRho());
 	}
 
 	/**

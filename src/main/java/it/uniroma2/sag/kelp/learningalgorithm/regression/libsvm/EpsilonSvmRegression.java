@@ -201,7 +201,7 @@ public class EpsilonSvmRegression extends LibCSvmSolver implements
 		int svCount = 0;
 		for (int i = 0; i < l; i++) {
 
-			float newAlpha = y[i] * alphas[i] - y[i + l] * alphas[i + l];
+			float newAlpha = alphas[i] - alphas[i + l];
 			if (newAlpha != 0) {
 				this.regressor.getModel().addExample(newAlpha, examples.get(i));
 				svCount++;
@@ -209,18 +209,13 @@ public class EpsilonSvmRegression extends LibCSvmSolver implements
 
 			sum_alpha += Math.abs(newAlpha);
 		}
-		logger.info("nu = " + sum_alpha / (super.cp * (float) l) + "\n");
-		// System.out.println("nu = " + sum_alpha / (super.cp * (float) l) +
-		// "\n");
-		logger.info("obj = " + solution.getObj() + "\n");
-		System.out.println("obj = " + solution.getObj() + "\n");
-
+		logger.info("nu = " + sum_alpha / (super.cp * (float) l));
+		logger.info("obj = " + solution.getObj());
+		
 		regressor.getModel().setKernel(kernel);
 
 		logger.info("RHO\t" + solution.getRho());
-		// System.out.println("RHO\t" + solution.getRho());
 		logger.info("svCount\t" + svCount);
-		System.out.println("svCount\t" + svCount);
 
 		this.sign = null;
 		this.index = null;

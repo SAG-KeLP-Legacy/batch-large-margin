@@ -15,7 +15,6 @@
 
 package it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.solver;
 
-import it.uniroma2.sag.kelp.data.example.Example;
 
 /**
  * It is the instance of a solution provided the LIBSVM solver of the SMO
@@ -34,11 +33,6 @@ import it.uniroma2.sag.kelp.data.example.Example;
  * @author Danilo Croce
  */
 public class SvmSolution {
-
-	/**
-	 * The output Support Vectors
-	 */
-	private Example[] supporVectors;
 
 	/**
 	 * The weight \(\alpha\) of the Support Vectors
@@ -84,13 +78,6 @@ public class SvmSolution {
 	}
 
 	/**
-	 * @return the Support Vectors
-	 */
-	public Example[] getSupporVectors() {
-		return supporVectors;
-	}
-
-	/**
 	 * @return the \(C_n\) value
 	 */
 	public float getUpper_bound_n() {
@@ -126,14 +113,6 @@ public class SvmSolution {
 	 */
 	public void setRho(float rho) {
 		this.rho = rho;
-	}
-
-	/**
-	 * @param supporVectors
-	 *            set the Support Vectors
-	 */
-	protected void setSupporVectors(Example[] supporVectors) {
-		this.supporVectors = supporVectors;
 	}
 
 	/**

@@ -16,7 +16,6 @@
 package it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm;
 
 import it.uniroma2.sag.kelp.data.dataset.Dataset;
-import it.uniroma2.sag.kelp.data.example.Example;
 import it.uniroma2.sag.kelp.data.label.Label;
 import it.uniroma2.sag.kelp.kernel.Kernel;
 import it.uniroma2.sag.kelp.learningalgorithm.KernelMethod;
@@ -188,13 +187,12 @@ public class BinaryCSvmClassification extends LibCSvmSolver implements
 
 		this.classifier.getModel().setBias(-solution.getRho());
 
-		Example[] supportVectors = solution.getSupporVectors();
 		float[] alphas = solution.getAlphas();
-		for (int i = 0; i < supportVectors.length; i++) {
+		for (int i = 0; i < trainingSet.getNumberOfExamples(); i++) {
 
 			if (alphas[i] != 0) {
-				this.classifier.getModel().addExample(alphas[i],
-						supportVectors[i]);
+				this.classifier.getModel().addExample(y[i] * alphas[i],
+						trainingSet.getExamples().get(i));
 			}
 		}
 
