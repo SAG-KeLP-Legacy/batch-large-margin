@@ -49,7 +49,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * The original LIBLINEAR code:
  * <code>http://www.csie.ntu.edu.tw/~cjlin/liblinear</code>
  * <p>
- * The original JAVA porting: <code>http://liblinear.bwaldvogel.de</code>
+ * The original JAVA porting (v 1.94): <code>http://liblinear.bwaldvogel.de</code>
  * 
  * @author Danilo Croce
  */

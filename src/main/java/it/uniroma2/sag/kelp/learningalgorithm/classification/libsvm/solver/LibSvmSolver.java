@@ -31,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * This class implements the solver of the SVM quadratic problem described in
- * [CC Chang & CJ Lin, 2011]. It is a Java porting of the library LIBSVM,
+ * [CC Chang & CJ Lin, 2011]. It is a Java porting of the library LIBSVM v3.17,
  * written in C++.
  * <p>
  * Further details can be found in:

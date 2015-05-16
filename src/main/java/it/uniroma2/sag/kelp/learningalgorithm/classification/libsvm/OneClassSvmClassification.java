@@ -35,7 +35,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * and it relies on kernel functions. The model is acquired only by considering
  * positive examples. It is useful in anomaly detection (a.k.a. novelty detection) 
  * <p>
- * It is a Java porting of the library LIBSVM, written in C++.
+ * It is a Java porting of the library LIBSVM v3.17, written in C++.
  * <p>
  * Further details can be found in:
  * <p>

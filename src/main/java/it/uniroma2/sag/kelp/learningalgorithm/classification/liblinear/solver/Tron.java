@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * Trust Region Newton Method optimization<br>
  * 
  * NOTE: This code has been adapted from the Java port of the original LIBLINEAR
- * C++ sources. Original Java sources are available at
+ * C++ sources. Original Java sources (v 1.94) are available at
  * <code>http://liblinear.bwaldvogel.de</code>
  * 
  * @author Danilo Croce

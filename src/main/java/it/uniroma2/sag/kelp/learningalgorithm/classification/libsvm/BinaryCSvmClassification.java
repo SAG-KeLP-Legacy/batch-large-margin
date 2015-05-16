@@ -34,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * 2011]. It is a learning algorithm for binary linear classification and it
  * relies on kernel functions.
  * <p>
- * It is a Java porting of the library LIBSVM, written in C++.
+ * It is a Java porting of the library LIBSVM v3.17, written in C++.
  * <p>
  * Further details can be found in:
  * <p>

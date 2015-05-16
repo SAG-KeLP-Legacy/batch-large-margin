@@ -19,7 +19,7 @@ import it.uniroma2.sag.kelp.kernel.Kernel;
 
 /**
  * It is the instance of a solution provided the \(\nu\)-SVM solver of the
- * optimization problem. It is a Java porting of the library LIBSVM, written in
+ * optimization problem. It is a Java porting of the library LIBSVM v3.17, written in
  * C++.
  * <p>
  * Further details can be found in:

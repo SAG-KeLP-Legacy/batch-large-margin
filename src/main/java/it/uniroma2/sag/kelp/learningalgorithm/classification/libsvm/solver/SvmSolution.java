@@ -18,7 +18,7 @@ package it.uniroma2.sag.kelp.learningalgorithm.classification.libsvm.solver;
 
 /**
  * It is the instance of a solution provided the LIBSVM solver of the SMO
- * optimization problem. It is a Java porting of the SVM implemented in LIBSVM
+ * optimization problem. It is a Java porting of the SVM implemented in LIBSVM v3.17
  * <p>
  * Further details can be found in:
  * <p>
