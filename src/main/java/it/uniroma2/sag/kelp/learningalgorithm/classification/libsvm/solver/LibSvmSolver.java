@@ -435,6 +435,15 @@ public abstract class LibSvmSolver implements BinaryLearningAlgorithm {
 	public void setCp(float cp) {
 		this.cp = cp;
 	}
+	
+	/**
+	 * @param c
+	 *            The regularization parameter for both positive and negative examples
+	 */
+	public void setC(float c){
+		this.setCp(c);
+		this.setCn(c);
+	}
 
 	/*
 	 * (non-Javadoc)

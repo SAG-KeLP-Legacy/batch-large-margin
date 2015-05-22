@@ -152,7 +152,7 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 	}
 
 	/**
-	 * @return the cp
+	 * @return the regularization parameter for positive examples
 	 */
 	public double getCp() {
 		return cp;
@@ -160,14 +160,14 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 
 	/**
 	 * @param cp
-	 *            the cp to set
+	 *            the regularization parameter to set for positive examples
 	 */
 	public void setCp(double cp) {
 		this.cp = cp;
 	}
 
 	/**
-	 * @return the cn
+	 * @return the regularization parameter for negative examples
 	 */
 	public double getCn() {
 		return cn;
@@ -175,12 +175,21 @@ public class LibLinearLearningAlgorithm implements LinearMethod,
 
 	/**
 	 * @param cn
-	 *            the cn to set
+	 *           the regularization parameter to set for negative examples
 	 */
 	public void setCn(double cn) {
 		this.cn = cn;
 	}
 
+	/**
+	 * @param c
+	 *            the regularization parameter to set for both positive and negative examples
+	 */
+	public void setC(double c){
+		this.setCn(c);
+		this.setCp(c);
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
