@@ -103,7 +103,7 @@ public class Problem {
 		this.y = new double[l];
 		this.x = new LibLinearFeature[l][];
 
-		ArrayList<Vector<?>> vectorlist = new ArrayList<Vector<?>>();
+		ArrayList<Vector> vectorlist = new ArrayList<Vector>();
 
 		if (dataset.getExamples().get(0).getRepresentation(reprentationName) instanceof DenseVector)
 			isInputDense = true;
@@ -113,7 +113,7 @@ public class Problem {
 			SimpleExample simpleExample = (SimpleExample) e;
 			Representation r = simpleExample
 					.getRepresentation(reprentationName);
-			Vector<?> vector = (Vector<?>) r;
+			Vector vector = (Vector) r;
 
 			vectorlist.add(vector);
 
@@ -159,14 +159,14 @@ public class Problem {
 		return res;
 	}
 
-	public Vector<?> getW(double[] w) {
+	public Vector getW(double[] w) {
 		if (isInputDense) {
 			return getDenseW(w);
 		}
 		return getSparseW(w);
 	}
 
-	public void initializeExamples(ArrayList<Vector<?>> vectorlist) {
+	public void initializeExamples(ArrayList<Vector> vectorlist) {
 		if (isInputDense) {
 			initializeExamplesDense(vectorlist);
 		} else {
@@ -174,7 +174,7 @@ public class Problem {
 		}
 	}
 
-	private void initializeExamplesDense(ArrayList<Vector<?>> vectorlist) {
+	private void initializeExamplesDense(ArrayList<Vector> vectorlist) {
 		for (int vectorId = 0; vectorId < vectorlist.size(); vectorId++) {
 			DenseVector denseVector = (DenseVector) (vectorlist.get(vectorId));
 			if (vectorId == 0) {
@@ -189,12 +189,12 @@ public class Problem {
 		}
 	}
 
-	private void initializeExamplesSparse(ArrayList<Vector<?>> vectorlist) {
+	private void initializeExamplesSparse(ArrayList<Vector> vectorlist) {
 		/*
 		 * Building dictionary
 		 */
 		int featureIndex = 1;
-		for (Vector<?> v : vectorlist) {
+		for (Vector v : vectorlist) {
 			//for (String dimLabel : v.getActiveFeatures().keySet()) {
 			for (Object dimLabel : v.getActiveFeatures().keySet()) {
 				if (!featureDict.containsKey(dimLabel)) {
@@ -212,7 +212,7 @@ public class Problem {
 		n = featureDict.size() + 1;
 		bias = 0;
 		int i = 0;
-		for (Vector<?> v : vectorlist) {
+		for (Vector v : vectorlist) {
 			Map<?, Number> activeFeatures = v.getActiveFeatures();
 			this.x[i] = new LibLinearFeatureNode[activeFeatures.size()];
 			int j = 0;

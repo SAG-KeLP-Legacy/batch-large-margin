@@ -151,7 +151,7 @@ public class PegasosLearningAlgorithm implements LinearMethod, ClassificationLea
 			List<Example> A_tp = new ArrayList<Example>();
 			List<Float> signA_tp = new ArrayList<Float>();
 			float eta_t = ((float)1)/(lambda*t);
-			Vector<?> w_t = this.getPredictionFunction().getModel().getHyperplane();
+			Vector w_t = this.getPredictionFunction().getModel().getHyperplane();
 
 			//creating A_tp
 			for(Example example: A_t){
