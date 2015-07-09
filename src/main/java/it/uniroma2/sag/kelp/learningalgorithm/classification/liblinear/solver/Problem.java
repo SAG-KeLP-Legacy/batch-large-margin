@@ -73,9 +73,9 @@ public class Problem {
 		CLASSIFICATION, REGRESSION
 	}
 
-	public TObjectIntHashMap<String> featureDict = new TObjectIntHashMap<String>();
+	public TObjectIntHashMap<Object> featureDict = new TObjectIntHashMap<Object>();
 
-	public TIntObjectHashMap<String> featureInverseDict = new TIntObjectHashMap<String>();
+	public TIntObjectHashMap<Object> featureInverseDict = new TIntObjectHashMap<Object>();
 
 	/** the number of training data */
 	public int l;
@@ -195,7 +195,8 @@ public class Problem {
 		 */
 		int featureIndex = 1;
 		for (Vector v : vectorlist) {
-			for (String dimLabel : v.getActiveFeatures().keySet()) {
+			//for (String dimLabel : v.getActiveFeatures().keySet()) {
+			for (Object dimLabel : v.getActiveFeatures().keySet()) {
 				if (!featureDict.containsKey(dimLabel)) {
 					featureDict.put(dimLabel, featureIndex);
 					featureInverseDict.put(featureIndex, dimLabel);
@@ -212,10 +213,10 @@ public class Problem {
 		bias = 0;
 		int i = 0;
 		for (Vector v : vectorlist) {
-			Map<String, Number> activeFeatures = v.getActiveFeatures();
+			Map<?, Number> activeFeatures = v.getActiveFeatures();
 			this.x[i] = new LibLinearFeatureNode[activeFeatures.size()];
 			int j = 0;
-			for (String dimLabel : activeFeatures.keySet()) {
+			for (Object dimLabel : activeFeatures.keySet()) {
 				this.x[i][j] = new LibLinearFeatureNode(
 						featureDict.get(dimLabel), activeFeatures.get(dimLabel).doubleValue());
 				j++;

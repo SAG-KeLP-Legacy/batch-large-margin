@@ -26,7 +26,6 @@ import it.uniroma2.sag.kelp.learningalgorithm.classification.liblinear.solver.Pr
 import it.uniroma2.sag.kelp.learningalgorithm.classification.liblinear.solver.Tron;
 import it.uniroma2.sag.kelp.learningalgorithm.regression.RegressionLearningAlgorithm;
 import it.uniroma2.sag.kelp.predictionfunction.model.BinaryLinearModel;
-import it.uniroma2.sag.kelp.predictionfunction.regressionfunction.RegressionFunction;
 import it.uniroma2.sag.kelp.predictionfunction.regressionfunction.UnivariateLinearRegressionFunction;
 
 import java.util.Arrays;
@@ -54,7 +53,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * 
  * @author Danilo Croce
  */
-@JsonTypeName("liblinearregressin")
+@JsonTypeName("liblinearregression")
 public class LibLinearRegression implements LinearMethod,
 		RegressionLearningAlgorithm, BinaryLearningAlgorithm {
 
@@ -86,9 +85,12 @@ public class LibLinearRegression implements LinearMethod,
 
 	/**
 	 * @param label
-	 *            The label to be learned
+	 *            The regression property to be learned
 	 * @param c
 	 *            The regularization parameter
+	 *            
+	 * @param p
+	 *            The The epsilon in loss function of SVR
 	 * 
 	 * @param representationName
 	 *            The identifier of the representation to be considered for the
@@ -289,7 +291,7 @@ public class LibLinearRegression implements LinearMethod,
 	}
 
 	@Override
-	public RegressionFunction getPredictionFunction() {
+	public UnivariateLinearRegressionFunction getPredictionFunction() {
 		return regressionFunction;
 	}
 
